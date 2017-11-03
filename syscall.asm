@@ -18,10 +18,10 @@
 
 section .text
 
-sys_cork:;rdi - socket
+sys_cork: ;rdi - socket
     stackpush
-    mov r10, one_constant ;pointer to 1
-    mov r8, 8        ;sizeof int
+    mov r10, one_constant ; Pointer to 1
+    mov r8, 8        ; sizeof int
     mov rsi, LEVEL_IPPROTO_TCP
     mov rdx, SOCKOPT_TCP_CORK
     mov rax, SYS_SETSOCKOPT
@@ -29,10 +29,10 @@ sys_cork:;rdi - socket
     stackpop
     ret
 
-sys_uncork;rdi - socket
+sys_uncork ;rdi - socket
     stackpush
-    mov r10, one_constant ;pointer to 1
-    mov r8, 8        ;sizeof int
+    mov r10, one_constant ; Pointer to 1
+    mov r8, 8        ; sizeof int
     mov rsi, LEVEL_IPPROTO_TCP
     mov rdx, SOCKOPT_TCP_CORK
     mov rax, SYS_SETSOCKOPT
@@ -40,10 +40,10 @@ sys_uncork;rdi - socket
     stackpop
     ret
 
-sys_reuse;rdi - socket
+sys_reuse ;rdi - socket
     stackpush
-    mov r8, 8        ;sizeof int
-    mov r10, one_constant      ;pointer to 1
+    mov r8, 8        ; sizeof int
+    mov r10, one_constant      ; Pointer to 1
     mov rsi, LEVEL_SOL_TCP 
     mov rdx, SOCKOPT_TCP_REUSEADDR
     mov rax, SYS_SETSOCKOPT
@@ -51,7 +51,7 @@ sys_reuse;rdi - socket
     stackpop
     ret
 
-sys_sendfile: ;rdi - outfd, rsi - infd, rdx - file size
+sys_sendfile: ; rdi - outfd, rsi - infd, rdx - file size
     stackpush
     mov r10, rdx
     xor rdx, rdx
@@ -60,7 +60,7 @@ sys_sendfile: ;rdi - outfd, rsi - infd, rdx - file size
     stackpop
     ret
 
-sys_lseek:; rdi - fd, rsi - offset, rdx - flag
+sys_lseek: ; rdi - fd, rsi - offset, rdx - flag
     stackpush
     mov rax, SYS_LSEEK
     syscall
@@ -69,7 +69,7 @@ sys_lseek:; rdi - fd, rsi - offset, rdx - flag
 
 sys_open:
     stackpush
-    mov rsi, OPEN_RDONLY ;flags     
+    mov rsi, OPEN_RDONLY ; Flags
     mov rax, SYS_OPEN
     syscall
     stackpop
@@ -94,7 +94,7 @@ sys_send:
 
 sys_recv:
     stackpush
-    xor r10, r10 ; flags
+    xor r10, r10 ; Flags
     xor r8, r8
     xor r9, r9
     mov rax, SYS_RECVFROM
@@ -115,7 +115,7 @@ sys_accept:
 sys_listen:
     stackpush
     mov rdi, [listen_socket]
-    mov rsi, 100000000;backlog
+    mov rsi, 100000000 ; Backlog
     mov rax, SYS_LISTEN
     syscall
     stackpop
@@ -141,7 +141,7 @@ sys_create_tcp_socket:
     stackpop
     ret
 
-sys_open_directory:;rdi = path, rax = ret ( fd )
+sys_open_directory: ; rdi = path, rax = ret ( fd )
     stackpush
     mov rsi, OPEN_DIRECTORY | OPEN_RDONLY ;flags 
     mov rax, SYS_OPEN
@@ -151,8 +151,8 @@ sys_open_directory:;rdi = path, rax = ret ( fd )
 
 sys_write:
     stackpush
-    mov rdx, rsi ;length
-    mov rsi, rdi ;buffer
+    mov rdx, rsi ; Length
+    mov rsi, rdi ; Buffer
     mov rdi, FD_STDOUT
     mov rax, SYS_WRITE
     syscall
@@ -183,13 +183,13 @@ sys_sleep:
 
 sys_mmap_mem:
     stackpush
-    mov rsi, rdi                                                    ;Size
-    xor rdi, rdi                                                    ;Preferred address (don't care)
-    mov rdx, MMAP_PROT_READ | MMAP_PROT_WRITE                       ;Protection Flags
-    mov r10, MMAP_MAP_PRIVATE | MMAP_MAP_ANON                       ;Flags
+    mov rsi, rdi                                                    ; Size
+    xor rdi, rdi                                                    ; Preferred address (don't care)
+    mov rdx, MMAP_PROT_READ | MMAP_PROT_WRITE                       ; Protection Flags
+    mov r10, MMAP_MAP_PRIVATE | MMAP_MAP_ANON                       ; Flags
     xor r8, r8
-    dec r8                                                          ;-1 fd because of MMAP_MAP_ANON
-    xor r9, r9                                                      ;Offset
+    dec r8                                                          ; -1 fd because of MMAP_MAP_ANON
+    xor r9, r9                                                      ; Offset
     mov rax, SYS_MMAP
     syscall
     stackpop
@@ -197,35 +197,35 @@ sys_mmap_mem:
 
 sys_mmap_stack:
     stackpush
-    mov rsi, rdi                                                    ;Size
-    xor rdi, rdi                                                    ;Preferred address (don't care)
-    mov rdx, MMAP_PROT_READ | MMAP_PROT_WRITE                       ;Protection Flags
-    mov r10, MMAP_MAP_PRIVATE | MMAP_MAP_ANON | MMAP_MAP_GROWSDOWN  ;Flags
+    mov rsi, rdi                                                    ; Size
+    xor rdi, rdi                                                    ; Preferred address (don't care)
+    mov rdx, MMAP_PROT_READ | MMAP_PROT_WRITE                       ; Protection Flags
+    mov r10, MMAP_MAP_PRIVATE | MMAP_MAP_ANON | MMAP_MAP_GROWSDOWN  ; Flags
     xor r8, r8
-    dec r8                                                          ;-1 fd because of MMAP_MAP_ANON
-    xor r9, r9                                                      ;Offset
+    dec r8                                                          ; -1 fd because of MMAP_MAP_ANON
+    xor r9, r9                                                      ; Offset
     mov rax, SYS_MMAP
     syscall
     stackpop
     ret
 
 sys_clone: 
-    mov r14, rdi      ;Address of the thread_func
-    mov r15, rsi      ;Thread Param
+    mov r14, rdi      ; Address of the thread_func
+    mov r15, rsi      ; Thread Param
     mov rdi, THREAD_STACK_SIZE
     call sys_mmap_stack
-    lea rsi, [rax + THREAD_STACK_SIZE]       ;Set newly allocated memory
+    lea rsi, [rax + THREAD_STACK_SIZE]       ; Set newly allocated memory
     mov rdi, CLONE_FILES | CLONE_VM | CLONE_FS | CLONE_THREAD | CLONE_SIGHAND | SIGCHILD ;Flags
-    xor r10, r10 ;parent_tid
-    xor r8,  r8 ;child_tid
-    xor r9,  r9 ;regs
+    xor r10, r10 ; parent_tid
+    xor r8,  r8 ; child_tid
+    xor r9,  r9 ; regs
     mov rax, SYS_CLONE
     syscall
-    cmp rax, 0 ;If ret is not 0, then it's the ID of the new thread
+    cmp rax, 0 ; If ret is not 0, then it's the ID of the new thread
     jnz parent
-    push r14     ;Else,  set new return address
-    mov rdi, r15 ;and set param
-    ret          ;Return to thread_proc
+    push r14     ; Else,  set new return address
+    mov rdi, r15 ; and set param
+    ret          ; Return to thread_proc
 parent:
     ret
 

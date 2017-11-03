@@ -15,7 +15,7 @@
 ;
 ;You should have received a copy of the GNU General Public License
 ;along with asmttpd.  If not, see <http://www.gnu.org/licenses/>.
-string_itoa:; rdi - buffer, rsi - int
+string_itoa: ; rdi - buffer, rsi - int
     stackpush
     push rcx
     push rbx
@@ -25,18 +25,18 @@ string_itoa:; rdi - buffer, rsi - int
     xchg rdi, rsi
     mov rcx, rax ;
     
-    ;add null
+    ; Add null
     mov al, 0x0
     mov [rdi+rcx], al
     dec rcx
 
-    mov rax, rsi ; value to print
-    xor rdx, rdx ; zero other half
+    mov rax, rsi ; Value to print
+    xor rdx, rdx ; Zero other half
     mov rbx, 10
     
     string_itoa_start:
-    xor rdx, rdx ; zero other half
-    div rbx      ; divide by 10
+    xor rdx, rdx ; Zero other half
+    div rbx      ; Divide by 10
 
     add rdx, 0x30
     mov [rdi+rcx], dl
@@ -46,7 +46,7 @@ string_itoa:; rdi - buffer, rsi - int
 
     cmp rcx, 0
     jl string_itoa_done
-    add rax, 0x30 ;last digit
+    add rax, 0x30 ; Last digit
     mov [rdi+rcx], al
 
     string_itoa_done:
@@ -58,25 +58,25 @@ string_itoa:; rdi - buffer, rsi - int
 string_atoi: ; rdi = string, rax = int
     stackpush
     
-    mov r8, 0 ; ;return
+    mov r8, 0 ; Return
 
     call get_string_length
-    mov r10, rax ; length 
+    mov r10, rax ; Length
     cmp rax, 0
     je string_atoi_ret_empty
 
-    mov r9, 1 ; multiplier
+    mov r9, 1 ; Multiplier
     
     dec r10
     string_atoi_loop:
     xor rbx, rbx
     mov bl, BYTE [rdi+r10]
-    sub bl, 0x30   ;get byte, subtract to get real from ascii value
+    sub bl, 0x30   ; Get byte, subtract to get real from ascii value
     mov rax, r9    
-    mul rbx         ; multiply value by multiplier
-    add r8, rax    ; add result to running total
-    dec r10        ; next digit
-    mov rax, 10 ; multiply r9 ( multiplier ) by 10
+    mul rbx         ; Multiply value by multiplier
+    add r8, rax    ; Add result to running total
+    dec r10        ; Next digit
+    mov rax, 10 ; Multiply r9 ( multiplier ) by 10
     mul r9
     mov r9, rax
     cmp r10, -1
@@ -96,13 +96,13 @@ string_atoi: ; rdi = string, rax = int
 string_copy: ; rdi = dest, rsi = source, rdx = bytes to copy
     stackpush
     mov rcx, rdx
-    inc rcx ; to get null
+    inc rcx ; To get null
     cld
     rep movsb 
     stackpop
     ret
 
-string_concat_int: ;rdi = string being added to, rsi = int to add, ret: new length
+string_concat_int: ; rdi = string being added to, rsi = int to add, ret: new length
     stackpush
 
     call get_string_length
@@ -114,14 +114,14 @@ string_concat_int: ;rdi = string being added to, rsi = int to add, ret: new leng
     stackpop
     ret
 
-string_concat: ;rdi = string being added to, rsi = string to add, ret: new length
+string_concat: ; rdi = string being added to, rsi = string to add, ret: new length
     stackpush
     
     call get_string_length
     add rdi, rax ; Go to end of string
     mov r10, rax
     
-    ;Get length of source ie. bytes to copy
+    ; Get length of source ie. bytes to copy
     push rdi
     mov rdi, rsi
     call get_string_length
@@ -137,11 +137,11 @@ string_concat: ;rdi = string being added to, rsi = string to add, ret: new lengt
     stackpop
     ret
 
-string_contains: ;rdi = haystack, rsi = needle, ret = rax: location of string, else -1
+string_contains: ; rdi = haystack, rsi = needle, ret = rax: location of string, else -1
     stackpush
     
-    xor r10, r10 ; total length from beginning
-    xor r8, r8 ; count from offset
+    xor r10, r10 ; Total length from beginning
+    xor r8, r8 ; Count from offset
 
     string_contains_start:
     mov dl, BYTE [rdi]
@@ -150,11 +150,11 @@ string_contains: ;rdi = haystack, rsi = needle, ret = rax: location of string, e
     cmp dl, BYTE [rsi]
     je string_contains_check
     inc rdi
-    inc r10 ; count from base ( total will be r10 + r8 )
+    inc r10 ; Count from base ( total will be r10 + r8 )
     jmp string_contains_start
 
     string_contains_check:
-    inc r8 ; already checked at pos 0
+    inc r8 ; Already checked at pos 0
     cmp BYTE [rsi+r8], 0x00
     je string_contains_ret_ok
     mov dl, [rdi+r8]
@@ -179,17 +179,17 @@ string_contains: ;rdi = haystack, rsi = needle, ret = rax: location of string, e
     ret
 
 
-;Removes first instance of string
-string_remove: ;rdi = source, rsi = string to remove, ret = 1 for removed, 0 for not found
+; Removes first instance of string
+string_remove: ; rdi = source, rsi = string to remove, ret = 1 for removed, 0 for not found
     stackpush
 
-    mov r9, 0 ; return flag
+    mov r9, 0 ; Return flag
 
     call get_string_length
     mov r8, rax ;  r8: source length
     cmp r8, 0 
     mov rax, 0
-    jle string_remove_ret ; source string empty?
+    jle string_remove_ret ; Source string empty?
 
     push rdi
     mov rdi, rsi
@@ -198,7 +198,7 @@ string_remove: ;rdi = source, rsi = string to remove, ret = 1 for removed, 0 for
     pop rdi
     cmp r10, 0
     mov rax, 0
-    jle string_remove_ret ; string to remove is blank?
+    jle string_remove_ret ; String to remove is blank?
 
     string_remove_start:
     
@@ -207,10 +207,10 @@ string_remove: ;rdi = source, rsi = string to remove, ret = 1 for removed, 0 for
     cmp rax,-1
     je string_remove_ret
     
-    ;Shift source string over
+    ; Shift source string over
     add rdi, rax
     mov rsi, rdi
-    add rsi, r10 ; copying to itself sans found string
+    add rsi, r10 ; Copying to itself sans found string
     
     cld
     string_remove_do_copy:
@@ -226,14 +226,14 @@ string_remove: ;rdi = source, rsi = string to remove, ret = 1 for removed, 0 for
     stackpop
     ret
 
-string_ends_with:;rdi = haystack, rsi = needle, ret = rax: 0 false, 1 true
+string_ends_with: ; rdi = haystack, rsi = needle, ret = rax: 0 false, 1 true
     stackpush
 
-    ;Get length of haystack, store in r8
+    ; Get length of haystack, store in r8
     call get_string_length
     mov r8, rax
 
-    ;Get length of needle, store in r10
+    ; Get length of needle, store in r10
     push rdi
     mov rdi, rsi
     call get_string_length
@@ -247,7 +247,7 @@ string_ends_with:;rdi = haystack, rsi = needle, ret = rax: 0 false, 1 true
     xor rdx, rdx
     
     string_ends_with_loop:
-    ;Start from end, dec r10 till 0
+    ; Start from end, dec r10 till 0
     mov dl, BYTE [rdi]
     cmp dl, BYTE [rsi]
     jne string_ends_with_ret
@@ -262,14 +262,14 @@ string_ends_with:;rdi = haystack, rsi = needle, ret = rax: 0 false, 1 true
     stackpop
     ret
 
-string_char_at_reverse: ;rdi = haystack, rsi = count from end, rdx = character(not pointer), ret = rax: 0 false, 1 true
+string_char_at_reverse: ; rdi = haystack, rsi = count from end, rdx = character(not pointer), ret = rax: 0 false, 1 true
     stackpush
-    inc rsi ; include null
+    inc rsi ; Include null
     call get_string_length
-    add rdi, rax ; go to end
-    sub rdi, rsi ; subtract count
-    mov rax, 0   ; set return to false
-    cmp dl, BYTE [rdi] ; compare rdx(dl)
+    add rdi, rax ; Go to end
+    sub rdi, rsi ; Subtract count
+    mov rax, 0   ; Set return to false
+    cmp dl, BYTE [rdi] ; Compare rdx(dl)
     jne string_char_at_reverse_ret
     mov rax, 1
     string_char_at_reverse_ret:
@@ -306,7 +306,7 @@ get_number_of_digits: ; of rdi, ret rax
     
     mov rax, rdi
     mov rbx, 10
-    mov rcx, 1 ;count
+    mov rcx, 1 ; Count
 gnod_cont:
     cmp rax, 10
     jb gnod_ret

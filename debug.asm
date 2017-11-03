@@ -16,7 +16,7 @@
 ;You should have received a copy of the GNU General Public License
 ;along with asmttpd.  If not, see <http://www.gnu.org/licenses/>.
 section .bss
-printbuffer:   resb 1024;debug
+printbuffer:   resb 1024 ; Debug
 
 section .text
 print_rdi:
@@ -30,21 +30,21 @@ print_rdi:
     call get_number_of_digits
     mov rcx, rax ;
 
-    inc rax ;include NL char in length
-    push rax; save length for syscall
+    inc rax ; Include NL char in length
+    push rax ; Save length for syscall
 
-    ;add lf
+    ; Add lf
     mov rdx, 0xa
     mov [printbuffer+rcx], dl
     dec rcx
 
-    mov rax, rdi ; value to print
-    xor rdx, rdx ; zero other half
+    mov rax, rdi ; Value to print
+    xor rdx, rdx ; Zero other half
     mov rbx, 10
     
 print_rdi_start:
-    xor rdx, rdx ; zero other half
-    div rbx      ; divide by 10
+    xor rdx, rdx ; Zero other half
+    div rbx      ; Divide by 10
 
     add rdx, 0x30
     mov [printbuffer+rcx], dl
@@ -52,10 +52,10 @@ print_rdi_start:
     cmp rax, 9
     ja print_rdi_start
 
-    add rax, 0x30 ;last digit
+    add rax, 0x30 ; Last digit
     mov [printbuffer+rcx], al
 
-    pop rcx ;restore original length
+    pop rcx ; Restore original length
     
     mov rdi, printbuffer
     mov rsi, rcx

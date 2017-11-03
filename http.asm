@@ -17,7 +17,7 @@
 ;along with asmttpd.  If not, see <http://www.gnu.org/licenses/>.
 
 ;This writes the text after "Content-Type: " at rsi
-detect_content_type: ;rdi - pointer to buffer that contains request, ret - rax: type flag
+detect_content_type: ; rdi - pointer to buffer that contains request, ret - rax: type flag
     stackpush
 
     mov rsi, extension_htm
@@ -80,13 +80,13 @@ detect_content_type: ;rdi - pointer to buffer that contains request, ret - rax: 
     cmp rax, 1
     je detect_content_type_ret
 
-    mov r10, CONTENT_TYPE_OCTET_STREAM ; default to octet-stream
+    mov r10, CONTENT_TYPE_OCTET_STREAM ; Default to octet-stream
     detect_content_type_ret:
     mov rax, r10
     stackpop
     ret
 
-add_content_type_header: ;rdi - pointer to buffer, rsi - type
+add_content_type_header: ; rdi - pointer to buffer, rsi - type
     stackpush
 
     mov r10, rsi
@@ -163,7 +163,7 @@ add_content_type_header: ;rdi - pointer to buffer, rsi - type
     stackpop
     ret
 
-create_httpError_response: ;rdi - pointer, rsi - error code: 400, 416, 413
+create_httpError_response: ; rdi - pointer, rsi - error code: 400, 416, 413
     stackpush
 
     cmp rsi, 416
@@ -205,7 +205,7 @@ create_httpError_response: ;rdi - pointer, rsi - error code: 400, 416, 413
     ret
     
 
-create_http206_response: ;rdi - pointer, rsi - from, rdx - to, r10 - total r9 - type
+create_http206_response: ; rdi - pointer, rsi - from, rdx - to, r10 - total r9 - type
                          ; looks like Content-Length: `rdx subtract rsi add 1`
                          ;            Content-Range: bytes rsi-rdx/r10
     stackpush
@@ -213,7 +213,7 @@ create_http206_response: ;rdi - pointer, rsi - from, rdx - to, r10 - total r9 - 
     push rsi
     push rdx
 
-    mov rsi, http_206 ; copy first one
+    mov rsi, http_206 ; Copy first one
     mov rdx, http_206_len
     call string_copy
 
@@ -279,14 +279,14 @@ create_http206_response: ;rdi - pointer, rsi - from, rdx - to, r10 - total r9 - 
     stackpop
     ret
 
-create_http200_response: ;rdi - pointer to buffer, rsi - type, rdx - length
+create_http200_response: ; rdi - pointer to buffer, rsi - type, rdx - length
     stackpush
 
-    push rdx ; save length
+    push rdx ; Save length
 
-    mov r10, rsi ;type
+    mov r10, rsi ; Type
     
-    mov rsi, http_200  ;First one we copy
+    mov rsi, http_200 ; First one we copy
     mov rdx, http_200_len
     call string_copy
 
@@ -302,7 +302,7 @@ create_http200_response: ;rdi - pointer to buffer, rsi - type, rdx - length
     mov rsi, content_length
     call string_concat
 
-    pop rsi ; length
+    pop rsi ; Length
     call string_concat_int
     
     mov rsi, crlf
@@ -319,10 +319,10 @@ create_http200_response: ;rdi - pointer to buffer, rsi - type, rdx - length
     stackpop
     ret
 
-create_http404_response: ;rdi - pointer to buffer
+create_http404_response: ; rdi - pointer to buffer
     stackpush
 
-    mov rsi, http_404  ;First one we copy
+    mov rsi, http_404 ; First one we copy
     mov rdx, http_404_len
     call string_copy
 
@@ -346,7 +346,7 @@ create_http404_response: ;rdi - pointer to buffer
     stackpop
     ret
 
-get_request_type: ;rdi - pointer to buffer, ret = rax: request type
+get_request_type: ; rdi - pointer to buffer, ret = rax: request type
     stackpush
 
        cld

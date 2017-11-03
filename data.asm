@@ -16,23 +16,23 @@
 ;You should have received a copy of the GNU General Public License
 ;along with asmttpd.  If not, see <http://www.gnu.org/licenses/>.
 
-    sockaddr_in: ;struct
+    sockaddr_in: ; struct
         sin_family dw AF_INET
         sin_port   dw LISTEN_PORT
-        sin_addr   dd 0 ;INADDR_ANY
+        sin_addr   dd 0 ; INADDR_ANY
     directory_path dq 0    
        request_type dq 0
        request_offset dq 0
-    timeval: ;struct
+    timeval: ; struct
         tv_sec  dq 0
         tv_usec dq 0
-    sigaction: ;struct
+    sigaction: ; struct
         sa_handler  dq 0
-        sa_flags    dq SA_RESTORER ; also dq, because padding
+        sa_flags    dq SA_RESTORER ; Also dq, because padding
         sa_restorer dq 0
         sa_mask     dq 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
     
-    ;Strings
+    ; Strings
     in_enter db "In Enter:",0x00
     in_enter_len equ $ - in_enter
     in_exit  db "In Exit:", 0x00
@@ -71,7 +71,7 @@
     char_slash db "/",0x00
     char_hyphen db "-",0x00
 
-    ;HTTP
+    ; HTTP
     http_200 db "HTTP/1.1 200 OK",0x0d,0x0a,0x00
     http_200_len equ $ - http_200
     http_206 db "HTTP/1.1 206 Partial Content",0x0d,0x0a,0x00
@@ -94,9 +94,9 @@
     range_header_len equ $ - range_header
 
     content_range db "Content-Range: bytes ",0x00
-    content_range_len equ $ - content_range  ;Content-Range: bytes 200-1000/3000
+    content_range_len equ $ - content_range  ; Content-Range: bytes 200-1000/3000
     
-    content_length db "Content-Length: ",0x00 ;Content-Length: 800
+    content_length db "Content-Length: ",0x00 ; Content-Length: 800
     content_length_len equ $ - content_length
 
     connection_header db "Connection: close",0x0d,0x0a,0x00
@@ -105,7 +105,7 @@
     content_type db "Content-Type: ",0x00
     content_type_len equ $ - content_type
     
-    ;Content-Type
+    ; Content-Type
     content_type_html db "text/html",0x0d,0x0a,0x00
     content_type_html_len equ $ - content_type_html
     
@@ -136,7 +136,7 @@
     default_document db "/index.html",0x00
     default_document_len equ $ - default_document
     
-    ;Content extension
+    ; Content extension
     extension_html     db ".html",0x00
     extension_htm      db ".htm" ,0x00
     extension_javascript db ".js",  0x00

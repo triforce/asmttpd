@@ -50,7 +50,7 @@ mutex_enter:
     lock cmpxchg [queue_futex], rdi
     cmp rax, 1
     je mutex_enter_wait
-    ;Both tries ( c == 2 || cmpxchg( 1, 2 ) ) failed
+    ; Both tries ( c == 2 || cmpxchg( 1, 2 ) ) failed
     mutex_enter_cont:
     mov rax, 0
     mov rdi, 2
